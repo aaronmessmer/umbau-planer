@@ -1,0 +1,101 @@
+name: Release
+
+# Manuell starten: Actions → Release → Run workflow → neue Versionsnummer eingeben (z. B. 0.2.0).
+# Der Workflow trägt die Version in manifest.json und frontend/package.json ein, committet auf den
+# gewählten Branch (Standard: main), setzt das Tag v<Version> und legt das GitHub-Release an,
+# das HACS als Version anzeigt.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Neue Versionsnummer ohne v (z. B. 0.2.0)"
+        required: true
+        type: string
+      prerelease:
+        description: "Als Vorabversion markieren"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Version prüfen
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::Ungültige Version '$VERSION'. Erwartet wird z. B. 0.2.0"
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Tag darf noch nicht existieren
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
+            echo "::error::Das Tag v$VERSION existiert bereits."
+            exit 1
+          fi
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Tests
+        run: |
+          pip install -r requirements_test.txt
+          pytest -q
+
+      - name: Version eintragen
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          python - <<'PY'
+          import json, os
+          version = os.environ["VERSION"]
+          for path in ("custom_components/umbau_planer/manifest.json", "frontend/package.json"):
+              with open(path, encoding="utf-8") as fh:
+                  data = json.load(fh)
+              data["version"] = version
+              with open(path, "w", encoding="utf-8") as fh:
+                  json.dump(data, fh, ensure_ascii=False, indent=2)
+                  fh.write("\n")
+          PY
+          # package-lock.json führt den Projektnamen und die Version ebenfalls
+          if [ -f frontend/package-lock.json ]; then
+            (cd frontend && npm version "$VERSION" --no-git-tag-version --allow-same-version >/dev/null)
+          fi
+
+      - name: Committen, taggen, Release anlegen
+        env:
+          VERSION: ${{ inputs.version }}
+          PRERELEASE: ${{ inputs.prerelease }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add custom_components/umbau_planer/manifest.json frontend/package.json frontend/package-lock.json
+          if git diff --cached --quiet; then
+            echo "Version steht bereits in den Dateien."
+          else
+            git commit -m "Release v$VERSION"
+          fi
+          git tag -a "v$VERSION" -m "Release v$VERSION"
+          git push origin "HEAD:${GITHUB_REF_NAME}" "v$VERSION"
+          flags=(--title "v$VERSION" --generate-notes --verify-tag)
+          if [ "$PRERELEASE" = "true" ]; then flags+=(--prerelease); fi
+          gh release create "v$VERSION" "${flags[@]}"

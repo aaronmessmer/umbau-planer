@@ -182,3 +182,7 @@ Das gebaute Bundle ist eingecheckt; die CI prüft, dass es zu den Quellen passt.
 ## Lizenz
 
 [MIT](LICENSE)
+
+## Neue Version veröffentlichen
+
+In GitHub unter **Actions → Release → Run workflow** die neue Versionsnummer eingeben (z. B. `0.2.0`). Der Workflow führt die Tests aus, trägt die Version in `manifest.json` und `frontend/package.json` ein, committet, setzt das Tag `v0.2.0` und legt das GitHub-Release an. HACS zeigt es danach als Update an. Gestartet wird er auf dem gewählten Branch, normalerweise `main`.
