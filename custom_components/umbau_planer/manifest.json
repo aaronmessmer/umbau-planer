@@ -1,9 +1,16 @@
 {
   "domain": "umbau_planer",
   "name": "Umbau-Planer",
-  "codeowners": ["@aaronmessmer"],
+  "codeowners": [
+    "@aaronmessmer"
+  ],
   "config_flow": true,
-  "dependencies": ["http", "panel_custom", "websocket_api", "persistent_notification"],
+  "dependencies": [
+    "http",
+    "panel_custom",
+    "websocket_api",
+    "persistent_notification"
+  ],
   "documentation": "https://github.com/aaronmessmer/umbau-planer",
   "integration_type": "service",
   "iot_class": "calculated",
