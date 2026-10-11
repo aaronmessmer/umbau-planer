@@ -178,3 +178,7 @@ Das gebaute Bundle ist eingecheckt; die CI prüft, dass es zu den Quellen passt.
 | Erledigte Projekte archivieren | Nicht umgesetzt; „Erledigte ausblenden“ blendet sie in der Aufgabenansicht aus, die Auswertung behält sie |
 | Gewerke | Frei änderbare Liste, eine Aufgabe hat höchstens ein Gewerk |
 | Verworfene Aufgaben | Ihre Zeit zählt weiter in Summen und Auswertung, ihre Restschätzung nicht |
+
+## Lizenz
+
+[MIT](LICENSE)
