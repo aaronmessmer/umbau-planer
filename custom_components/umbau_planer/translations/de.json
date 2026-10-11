@@ -1,0 +1,40 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Umbau-Planer",
+        "description": "Der Umbau-Planer wird eingerichtet. Personen, Prioritätsstufen und Gewerke stellst du danach im Panel unter „Einstellungen“ ein."
+      }
+    },
+    "abort": {
+      "already_configured": "Der Umbau-Planer ist bereits eingerichtet."
+    }
+  },
+  "services": {
+    "start_timer": {
+      "name": "Uhr starten",
+      "description": "Startet die Stempeluhr auf einer Aufgabe. Eine laufende Uhr wird im selben Moment beendet.",
+      "fields": {"task_id": {"name": "Aufgabe", "description": "Kennung der Aufgabe."}}
+    },
+    "stop_timer": {"name": "Uhr stoppen", "description": "Beendet die laufende Buchung."},
+    "resume_timer": {"name": "Uhr fortsetzen", "description": "Setzt die zuletzt gestempelte Aufgabe fort."},
+    "add_task": {
+      "name": "Aufgabe anlegen",
+      "description": "Legt eine Aufgabe an.",
+      "fields": {
+        "title": {"name": "Titel", "description": "Titel der Aufgabe."},
+        "parent_id": {"name": "Übergeordnete Aufgabe", "description": "Kennung der übergeordneten Aufgabe, leer für ein Projekt."}
+      }
+    },
+    "export": {
+      "name": "Exportieren",
+      "description": "Schreibt alle Daten als JSON-Datei.",
+      "fields": {"path": {"name": "Pfad", "description": "Zieldatei, standardmäßig im Konfigurationsordner."}}
+    },
+    "import": {
+      "name": "Importieren",
+      "description": "Liest eine JSON-Datei ein, nach automatischer Sicherung.",
+      "fields": {"path": {"name": "Pfad", "description": "Quelldatei."}}
+    }
+  }
+}

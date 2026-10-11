@@ -1,0 +1,34 @@
+start_timer:
+  fields:
+    task_id:
+      required: true
+      example: "3f2a8c1e-0000-0000-0000-000000000000"
+      selector:
+        text:
+stop_timer:
+resume_timer:
+add_task:
+  fields:
+    title:
+      required: true
+      example: "Sockelleisten Flur"
+      selector:
+        text:
+    parent_id:
+      required: false
+      selector:
+        text:
+export:
+  fields:
+    path:
+      required: false
+      example: "/config/umbau_planer_export.json"
+      selector:
+        text:
+import:
+  fields:
+    path:
+      required: true
+      example: "/config/umbau_planer_export.json"
+      selector:
+        text:
