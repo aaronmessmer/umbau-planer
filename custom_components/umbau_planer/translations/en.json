@@ -1,0 +1,67 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Umbau-Planer",
+        "description": "Umbau-Planer will be set up. Configure persons, priority levels and trades afterwards in the panel under Settings."
+      }
+    },
+    "abort": {
+      "already_configured": "Umbau-Planer is already set up."
+    }
+  },
+  "services": {
+    "start_timer": {
+      "name": "Start timer",
+      "description": "Starts the clock on a task. A running clock is stopped at the same instant.",
+      "fields": {
+        "task_id": {
+          "name": "Task",
+          "description": "Task id."
+        }
+      }
+    },
+    "stop_timer": {
+      "name": "Stop timer",
+      "description": "Ends the running booking."
+    },
+    "resume_timer": {
+      "name": "Resume timer",
+      "description": "Continues the last stamped task."
+    },
+    "add_task": {
+      "name": "Add task",
+      "description": "Creates a task.",
+      "fields": {
+        "title": {
+          "name": "Title",
+          "description": "Task title."
+        },
+        "parent_id": {
+          "name": "Parent task",
+          "description": "Id of the parent task, empty for a project."
+        }
+      }
+    },
+    "export": {
+      "name": "Export",
+      "description": "Writes all data to a JSON file.",
+      "fields": {
+        "path": {
+          "name": "Path",
+          "description": "Target file, defaults to the config folder."
+        }
+      }
+    },
+    "import": {
+      "name": "Import",
+      "description": "Reads a JSON file after an automatic backup.",
+      "fields": {
+        "path": {
+          "name": "Path",
+          "description": "Source file."
+        }
+      }
+    }
+  }
+}
