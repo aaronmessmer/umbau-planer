@@ -154,7 +154,7 @@ def update_task(
                 _set_blocked_by(data, task, list(value or []))
             elif key == "status":
                 set_status(data, task_id, value, now)
-        if has_cycle(data):
+        if ("blocked_by" in fields or "children_mode" in fields) and has_cycle(data):
             raise PlannerError(
                 "cycle", "Diese Änderung würde einen Zirkelbezug erzeugen."
             )
