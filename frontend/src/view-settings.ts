@@ -1,7 +1,7 @@
 import { html, nothing } from "lit";
 import { state } from "lit/decorators.js";
 import { UpBase } from "./base";
-import { fmtDur, parseDur } from "./format";
+import { fmtDur, newId, parseDur } from "./format";
 import type { Person } from "./types";
 
 interface HaUser {
@@ -95,7 +95,7 @@ export class UpViewSettings extends UpBase {
     const first = this.persons.length === 0;
     await this.savePersons([
       ...this.persons,
-      { id: crypto.randomUUID(), name: res.values.name, role: res.values.role, ha_user_id: first && me ? me.id : null },
+      { id: newId(), name: res.values.name, role: res.values.role, ha_user_id: first && me ? me.id : null },
     ]);
   }
 
