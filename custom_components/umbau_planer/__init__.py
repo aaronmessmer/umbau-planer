@@ -12,6 +12,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.loader import async_get_integration
 
 from . import websocket_api
 from .const import (
@@ -38,14 +39,6 @@ PLATFORMS = ["sensor", "binary_sensor", "calendar"]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 FRONTEND_DIR = Path(__file__).parent / "frontend"
 PANEL_FILE = "umbau-planer-panel.js"
-
-
-def _version() -> str:
-    try:
-        manifest = json.loads((Path(__file__).parent / "manifest.json").read_text())
-        return str(manifest.get("version", "0"))
-    except (OSError, ValueError):
-        return "0"
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -83,6 +76,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def _async_register_panel(hass: HomeAssistant) -> None:
+    # the integration object already holds the manifest, no file access in the event loop
+    version = (await async_get_integration(hass, DOMAIN)).version
     try:
         await hass.http.async_register_static_paths(
             [StaticPathConfig(STATIC_URL, str(FRONTEND_DIR), cache_headers=False)]
@@ -95,7 +90,7 @@ async def _async_register_panel(hass: HomeAssistant) -> None:
         webcomponent_name=PANEL_COMPONENT,
         sidebar_title=NAME,
         sidebar_icon="mdi:hammer-wrench",
-        module_url=f"{STATIC_URL}/{PANEL_FILE}?v={_version()}",
+        module_url=f"{STATIC_URL}/{PANEL_FILE}?v={version}",
         embed_iframe=False,
         require_admin=False,
         config={},

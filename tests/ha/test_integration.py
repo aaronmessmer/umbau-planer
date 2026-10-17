@@ -206,3 +206,26 @@ async def test_migration_creates_backup(hass: HomeAssistant, hass_storage):
     out = await store._async_migrate_func(0, 0, {"version": 1, "tasks": []})
     assert out["tasks"] == []
     assert any("migration" in f for f in os.listdir(hass.config.path("umbau_planer_backups")))
+
+
+async def test_panel_registration_uses_manifest_version(hass: HomeAssistant, monkeypatch):
+    """The panel URL carries the manifest version without reading files in the event loop."""
+    from homeassistant.components import frontend
+    from homeassistant.setup import async_setup_component
+
+    from custom_components import umbau_planer
+
+    monkeypatch.undo()  # use the real registration, not the autouse stub
+    assert await async_setup_component(hass, "frontend", {})
+    assert await async_setup_component(hass, "http", {})
+    await umbau_planer._async_register_panel(hass)
+    panel = hass.data[frontend.DATA_PANELS]["umbau-planer"]
+    import json
+    from pathlib import Path
+
+    manifest = json.loads(
+        (Path(umbau_planer.__file__).parent / "manifest.json").read_text(encoding="utf-8")
+    )
+    assert panel.config["_panel_custom"]["module_url"].endswith(
+        f"umbau-planer-panel.js?v={manifest['version']}"
+    )
